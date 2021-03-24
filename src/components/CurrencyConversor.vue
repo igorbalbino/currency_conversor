@@ -2,19 +2,27 @@
   <div class="conversor">
     <div class="currencyFrom">
         <template>
-          <h3><span>From:</span></h3>
+          <!--<h3><span>From:</span></h3>-->
+          <v-text-field>From:</v-text-field>
           <select>
-            <option value=""></option>
             <option value=""></option>
           </select>
         </template>
+        <template>
+          <v-text-field>Value</v-text-field>
+        </template>
       </div>
       <div class="currencyTo">
-        <h3><span>To:</span></h3>
+        <template>
+          <!--<h3><span>From:</span></h3>-->
+          <v-text-field>To:</v-text-field>
           <select>
             <option value=""></option>
-            <option value=""></option>
           </select>
+        </template>
+        <template>
+          <v-text-field>Value</v-text-field>
+        </template>
       </div>
     <div class="currencyResult">
       <textarea class="currencyResultArea"></textarea>

@@ -1,19 +1,21 @@
 <template>
-  <div class="home_page">
-    <div><NavToolBar /></div>
-    <div><CurrencyConversor /></div>
-  </div>
+  <v-app class="appHome">
+    <NavToolBar />
+    <v-container style="padding: 56px 0px 0px;">
+      <v-fade-transition mode="out-in">
+        <router-view />
+      </v-fade-transition>
+    </v-container>
+  </v-app>
 </template>
 
 <script>
-import NavToolBar from './NavToolBar.vue'
-import CurrencyConversor from './CurrencyConversor.vue'
+import NavToolBar from '../components/NavToolBar.vue'
 
 export default {
   name: 'App',
   components: {
-    NavToolBar,
-    CurrencyConversor
+    NavToolBar
   }
 }
 </script>
