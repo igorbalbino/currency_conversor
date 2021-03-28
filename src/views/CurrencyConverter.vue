@@ -3,7 +3,7 @@
     <div class="currencyFrom">
         <template>
           <h3><span>From:</span></h3>
-          <v-select label="From"></v-select>
+          <v-select v-for="currency in currencies" :key="currency" label="From"></v-select>
           <!--POSSIBLE SOLUTION
           <select>
             <option value="EUR">EUR</option>
@@ -36,12 +36,14 @@
 export default {
   name: 'CurrencyConverter',
   components: {
+  },
+  props: {
+    currencies
   }
 }
 
-console.log(getCurrencyData());
-
 //DECLARACAO DE VARIAVEIS
+var currencies = localStorage.getItem('CURRENCIES');
 var url;
 var endpoint;
 var aux;
@@ -62,6 +64,7 @@ function getCurrencyData ()  {
     }).then(function (r) {
       return r.json()
     }).then(function(data) {
+      localStorage.setItem('CURRENCIES', data)
       return data;
     }).catch(function (e){
       console.log('CurrencyConverter View fetch ERROR:');

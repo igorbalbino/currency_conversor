@@ -2,6 +2,11 @@
 <template>
   <v-app class="appHome" id="home">
     <NavToolBar />
+    <Adsense
+      data-ad-client="ca-pub-1302073407480464"
+      data-ad-slot="1234567890"
+      class="paddinToolBar">
+    </Adsense>
     <v-container class="paddinToolBar">
       <v-row>
         <v-col class="py-0">
@@ -38,18 +43,26 @@
 import Vue from 'vue'
 import router from 'vue-router'
 import NavToolBar from '../components/NavToolBar'
+import Ads from 'vue-google-adsense'
 
 // @ is an alias to /src
 export default {
   name: 'Home',
   components: {
-    NavToolBar
+    NavToolBar,
+    Ads
   }
 }
 
 const app = new Vue({
   router
 }).$mount('#home')
+
+Vue.use(require('vue-script2'))
+
+Vue.use(Ads.Adsense)
+Vue.use(Ads.InArticleAdsense)
+Vue.use(Ads.InFeedAdsense)
 
 console.log(app);
 </script>
