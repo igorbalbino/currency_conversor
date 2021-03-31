@@ -3,100 +3,130 @@
     <div class="currencyFrom">
         <template>
           <h3><span>From:</span></h3>
-          <v-select v-for="currency in currencies" :key="currency" label="From"></v-select>
-          <!--POSSIBLE SOLUTION
-          <select>
-            <option value="EUR">EUR</option>
-          </select>-->
+          <v-select v-model="viewFrom" :items="currencies" label="From" dense></v-select>
         </template>
       </div>
       <div class="currencyTo">
         <template>
           <h3><span>To:</span></h3>
-          <v-select label="To"></v-select>
-          <!--POSSIBLE SOLUTION
-          <select>
-            <option value="EUR">EUR</option>
-          </select>-->
+          <v-select v-model="viewTo" :items="currencies" label="To" dense></v-select>
         </template>
       </div>
-      <template style="align-text: center;">
-        <h3><span>Value:</span></h3>
-        <v-text-field placeholder="Value"></v-text-field>
-      </template>
+      <div class="currencyValue">
+        <template>
+          <h3><span>Value:</span></h3>
+          <v-text-field v-model="viewAmount" placeholder="Value"></v-text-field>
+        </template>
+      </div>
     <v-container class="currencyResult">
       <h3><span>Conversion result:</span></h3>
-      <h2><span>RESULT</span></h2>
+      <h2><span>{{ resAmount }}</span></h2>
     </v-container>
   </v-container>
 </template>
 
 <script>
-
+//EXPORTA DO VUE E PARA O VUE
 export default {
   name: 'CurrencyConverter',
   components: {
   },
-  props: {
-    currencies
+  data () {
+    return {
+      currencies,
+      viewFrom, 
+      viewTo, 
+      viewAmount,
+      resAmount
+    }
   }
 }
 
 //DECLARACAO DE VARIAVEIS
-var currencies = localStorage.getItem('CURRENCIES');
+var xhr = new XMLHttpRequest();
+var xhrResp = null;
 var url;
 var endpoint;
-var aux;
-//var auxE = '&';
-//var key = 'key=6a3aa9c6-0866-4049-ae1f-0098a64d558a';
+var currencies;
+var viewFrom, viewTo, viewAmount;
+var resAmount;
 
 //DECLARAÇAO DE FUNCOES
-function getCurrencyData ()  {
-  url = 'http://openexchangerates.org/api/'
+/**faz o curl GET da api */
+const makeCurlGET = (url, endpoint) => {
+  let uri = url + endpoint;
+
+  xhr.open("GET", uri, false);
+  xhr.onreadystatechange = function () {
+      if (this.readyState === XMLHttpRequest.DONE) {
+          if (this.status === 200) {
+              //Does not refer to customerArray
+              xhrResp = JSON.parse(this.responseText);
+          } else {
+              console.log(this.status, this.statusText);
+          }
+      }
+  };//onreadystatechange
+  xhr.send();
+};//makeCurlGET
+
+// const makeCurlConvert = (url, endpoint, params) => {
+//   let auxE = '&';
+//   let auxI = '?';
+//   let values = 'from=' + params[0] + auxE + 'to=' + params[1] + auxE + 'amount=' + auxE + params[2];
+//   let uri = url + endpoint + auxI + values;
+
+//   xhr.open("GET", uri, false);
+//   xhr.onreadystatechange = function () {
+//       if (this.readyState === XMLHttpRequest.DONE) {
+//           if (this.status === 200) {
+//               //Does not refer to customerArray
+//               xhrResp = JSON.parse(this.responseText);
+//           } else {
+//               console.log(this.status, this.statusText);
+//           }
+//       }
+//   };//onreadystatechange
+//   xhr.send();
+// };//makeCurlConvert
+
+const cleanner = () => {
+  url = null;
+  endpoint = null;
+  xhrResp = null;
+}/*cleaner*/
+
+/**faz curl e retorna as moedas*/
+const getCurrencyData = () => {
+  url = 'http://openexchangerates.org/api/';
   endpoint = 'currencies.json';
-  aux = '?show_alternative=1';
 
-  var uri = url + endpoint + aux;
+  makeCurlGET(url, endpoint);
 
-  try{
-    fetch(uri, {
-       method: 'GET'
-    }).then(function (r) {
-      return r.json()
-    }).then(function(data) {
-      localStorage.setItem('CURRENCIES', data)
-      return data;
-    }).catch(function (e){
-      console.log('CurrencyConverter View fetch ERROR:');
-      console.log(e);
-    }).finally(function(data) {
-      return data;
-    });
-  }catch (e) {
-    console.log('CurrencyConverter View try ERROR:2');
-    console.log(e);
-  }
-}
-console.log(getCurrencyData());
+  let keys = Object.keys(xhrResp);
+  // let data = Object.values(xhrResp);
+
+  currencies = keys;
+
+  cleanner();
+};/*getCurrencyData*/ getCurrencyData();
 
 /*
-const convertData = () => {
+const convertValue = (viewFrom, viewTo, viewAmount) => {
+  url = 'http://openexchangerates.org/api/';
   endpoint = 'infos/currencies.json';
-  var convertFrom_View;
-  var convertFrom_Data = 'from=' + convertFrom_View;
-  var convertTo_View;
-  var convertTo_Data = 'from=' + convertTo_View;
-  var amount_View;
-  var amount_Data = 'from=' + amount_View;
-  var uri = url + aux + convertFrom_Data + auxE + convertTo_Data + auxE + amount_Data + auxE + key;
+  
+  let params = [];
+  params[0] = viewFrom;
+  params[1] = viewTo;
+  params[2] = viewAmount;
 
-  fetch(uri).then(function (r) {
-    console.log(r);
-  }).catch(function (e) {
-    console.log('CurrencyConversor View ERROR:');
-    console.log(e);
-  });
-}
+  makeCurlConvert(url, endpoint, params);
+
+  currencies = xhrResp;
+  
+  cleanner();
+}/*convertValue**)/ convertValue();
 */
 
 </script>
@@ -113,8 +143,13 @@ const convertData = () => {
     width: 50%;
   }
 
+  .currencyValue{
+    width: 50%;
+  }
+
   .currencyResultArea {
     width: 50%;
     height: 40%;
+    
   }
 </style>
