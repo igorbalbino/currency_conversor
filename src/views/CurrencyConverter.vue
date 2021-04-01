@@ -15,7 +15,7 @@
       <div class="currencyValue">
         <template>
           <h3><span>Value:</span></h3>
-          <v-text-field v-model="viewAmount" placeholder="Value"></v-text-field>
+          <v-text-field class="centered-input" v-model="viewAmount" placeholder="Amount" outline single-line></v-text-field>
         </template>
       </div>
     <v-container class="currencyResult">
