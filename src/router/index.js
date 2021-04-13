@@ -20,6 +20,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "currencyHistory" */ '../views/CurrencyHistory.vue')
   },
   {
+    path: '/modalDefault',
+    name: 'ModalDefault',
+    component: () => import(/* webpackChunkName: "modalDefault" */ '../components/ModalDefault.vue')
+  },
+  {
     path: '/about',
     name: 'About',
     // route level code-splitting
