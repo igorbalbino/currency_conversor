@@ -17,7 +17,7 @@
         <h3><span>Value:</span></h3>
         <v-text-field class="centered-input" 
           v-model="viewAmount" placeholder="Amount" 
-          v-mask="['##,##','###,##','#.###,##','##.###,##','###.###,##', '#.###.###,##',
+          v-mask="['#,##', '##,##','###,##','#.###,##','##.###,##','###.###,##', '#.###.###,##',
           '##.###.###,##','###.###.###,##','#.###.###.###,##', '##.###.###.###,##',
           '###.###.###.###,##','#.###.###.###.###,##','##.###.###.###.###,##','###.###.###.###.###,##',
           '#.###.###.###.###.###,##','##.###.###.###.###.###,##', '###.###.###.###.###.###,##']" 
@@ -31,8 +31,9 @@
       </template>
     </div>
     <v-container class="currencyResult">
-      <h3><span>Result:</span></h3>
-      <h2><span>{{ resAmount }}</span></h2>
+      <!-- <h2><span>Result:</span></h2> -->
+      <h2>Result:</h2>
+      <p v-bind="resAmount"><span>{{ resAmount }}</span></p>
     </v-container>
   </v-container>
 </template>
@@ -60,6 +61,9 @@ export default {
       // isModalVisible
     }
   },
+  created () {
+    getCurrencyData()
+  },
   methods: {
     isValidF: (viewAmount) => {
       // ...
@@ -70,10 +74,10 @@ export default {
     // }
   },
   watch: {
-    'viewFrom': (data) => { 
+    'viewFrom': (data) => {
       viewFrom = data;
     },
-    'viewTo': (data) => { 
+    'viewTo': (data) => {
       viewTo = data;
     }
   }
@@ -97,6 +101,7 @@ var method                                = null;
 var currencies;
 var viewFrom, viewTo, viewAmount;
 var resAmount;
+// var arrSelectedOps;
 // var isModalVisible                        = false; 
 
 //DECLARAÇAO DE FUNCOES
@@ -119,7 +124,7 @@ const makeCurl = (url, endpoint, method) => {
     };//onreadystatechange
     xhr.send();
   } catch (e) {
-    console.log('makeCurlGET error');
+    console.log('makeCurl error');
     console.log(e);
   }
 };//makeCurlGET
@@ -132,7 +137,6 @@ const cleanner = () => {
   viewTo      = null;
   viewAmount  = null;
   method      = null;
-  console.log('cleanner');
 }/*cleaner*/
 
 const validateData = (viewAmount) => {
@@ -146,6 +150,15 @@ const validateData = (viewAmount) => {
 
     dataString = null;
 
+    if (viewFrom == null || viewFrom == undefined) {
+      console.log('Selecione o valor de FROM novamente.');
+      alert('Selecione o valor de FROM novamente.');
+    }
+    if (viewTo == null || viewFrom == undefined) {
+      console.log('Selecione o valor de TO novamente.');
+      alert('Selecione o valor de TO novamente.');
+    }
+
     convertValue(viewFrom, viewTo, viewAmount);
   }/**if */
 };/**validateData */
@@ -156,54 +169,95 @@ const getCurrencyData = () => {
   endpoint = 'currencies.json';
   method = 'GET';
 
-
   makeCurl(url, endpoint, method);
 
   let keys = Object.keys(xhrResp);
   // let values = Object.values(xhrResp);
 
-  if (currencies) {
-    console.log('Lista de moedas já cheia.');
-  } else {
+  if (currencies == null || currencies == undefined || currencies == [] || currencies == '') {
     currencies = keys;
+  } else {
+    console.log('Lista de moedas já cheia.');
   }
 
   cleanner();
 };/*getCurrencyData*/ getCurrencyData();
 
 const convertValue = (viewFrom, viewTo, viewAmount) => {
-  // url = 'https://api.exchangerate.host/';
-  // url = 'http://data.fixer.io/api/';
-  url = 'https://api.exchangerate.host/';
-  method = 'GET';
+  // url               = 'http://data.fixer.io/api/';
+  url               = 'https://api.exchangerate.host/';
+  method            = 'GET';
+  resAmount         = null;
 
-  trataCurlData();
-
-  // endpoint = 'convert' + auxI  + data_fixerKey + auxE + viewFrom + auxE + viewTo + auxE+ viewAmount;
-  endpoint = 'convert' + auxI  + viewFrom + auxE + viewTo + auxE+ viewAmount;
+  // endpoint = 'convert' + auxI  + data_fixerKey + auxE + viewFrom + auxE + viewTo + auxE+ viewAmount;/**data.fixer */
+  endpoint = 'convert' + auxI  + 'from=' + viewFrom + auxE + 'to=' + viewTo + auxE + 'a=' + viewAmount; /**exchangerate.host */
 
   makeCurl(url, endpoint, method);
 
-  if (resAmount) {
-    resAmount = null;
-    resAmount = xhrResp.result;
+  if (resAmount == null || resAmount == undefined || resAmount == [] || resAmount == '') {
+    if (xhrResp.result == null || xhrResp.result == undefined || xhrResp.result == [] || xhrResp.result == '') {
+      resAmount = 'Error!';
+    } else {
+      resAmount = xhrResp.result;
+      console.log(resAmount);
+    }
   } else {
-    resAmount = xhrResp;
+    if (xhrResp.result == null || xhrResp.result == undefined || xhrResp.result == [] || xhrResp.result == '') {
+      resAmount = 'Error!';
+    } else {
+      resAmount = null;
+      resAmount = xhrResp.result;
+      console.log(resAmount);
+    }
   }
-
-  console.log('resAmount');
-  console.log(resAmount);
-  console.log('xhrResp');
-  console.log(xhrResp);
   
   cleanner();
 }/*convertValue*/
 
-const trataCurlData = () => {
-  viewFrom    = 'from=' + viewFrom;
-  viewTo      = 'to=' + viewTo;
-  viewAmount  = 'amount=' + viewAmount;
-}/*trataCurlData*/
+// const trataCurlData = () => {
+//   console.log('tratando...');
+//   viewAmount  = String(viewAmount)
+//   viewFrom    = 'from=' + viewFrom;
+//   viewTo      = 'to=' + viewTo;
+//   viewAmount  = 'a=' + String(viewAmount);
+
+//   console.log('values after tratar');
+//   console.log(viewFrom);
+//   console.log(viewTo);
+//   console.log(viewAmount);
+
+//   verifySomeData_Random2(viewFrom, viewTo, viewAmount);
+// }/*trataCurlData*/
+
+// const rebuildData = () => {
+//   if (viewFrom == null || viewFrom == undefined) {
+//     viewFrom = arrSelectedOps[0];
+//   }
+//   if (viewTo == null || viewTo == undefined) {
+//     viewTo = arrSelectedOps[1];
+//   }
+// }/*rebuildData*/
+
+// const verifySomeData_Random = (n, n1, n2) => {
+//   let aux = Array(n, n1, n2);
+//   for (let i = 0; i < aux.length; i++) {
+//     if (aux[i] == null || aux[i] == undefined || aux[i] == [] || aux[i] == '') {
+//       viewFrom    = null;
+//       viewTo      = null;
+//     }
+//   }
+// }/*verifySomeData_Random*/
+
+// const verifySomeData_Random2 = (n, n1, n2) => {
+//   let aux = Array(n, n1, n2);
+//   if (aux[0].includes('from') && aux[1].includes('to') && aux[2].includes('a')) {
+//     console.log('data ok');
+//   } else {
+//     trataCurlData();
+//   }
+// }/*verifySomeData_Random2*/
+
+
 
 
 /** ///////////////////// */

@@ -20,33 +20,115 @@
 export default {
   name: 'CurrencyHistory',
   components: {
+  },
+  data () {
+    return {
+      currencies,
+      selected,
+      // isModalVisible
+    }
+  },
+  // created () {
+  //   getCurrencyData()
+  // },
+  methods: {
+    getHistory: (selected) => {
+      // ...
+      getCurrencyHistory(selected)
+    },
+    // closeModal: () => {
+    //   closeModal()
+    // }
+  },
+  watch: {
+    'selected': (data) => {
+      selected = data;
+    }
   }
 }
   /*
+  const xhr                                 = new XMLHttpRequest();
+  // const auxE                                = '&';
+  // const auxI                                = '?';
+  // const auxB                                = '/';
   var arr;
-  var url = 'http://api.currencylayer.com/';
-  var endpoint;
-  var aux = '?';
-  var auxE = '&';
-  var key = 'key=26c69564c33688772b250c1e505db841';
+  var xhrResp                               = null;
+  var url                                   = null;
+  var endpoint                              = null;
+  var selected;
+  var method                                = null;
+  var currencies;
+  var respHistory;
 
-  const convertData = () => {
-    endpoint = 'convert';
-    var convertFrom_View;
-    var convertFrom_Data = 'from=' + convertFrom_View;
-    var convertTo_View;
-    var convertTo_Data = 'from=' + convertTo_View;
-    var amount_View;
-    var amount_Data = 'from=' + amount_View;
-    var uri = url + aux + convertFrom_Data + auxE + convertTo_Data + auxE + amount_Data + auxE + key;
+  /0**faz o curl GET da api *0/
+  const makeCurl = (url, endpoint, method) => {
+    let uri = url + endpoint;
 
-    fetch(uri).then(response) {
-
-    }.catch(e) {
-      console.log('CurrencyConversor View ERROR:');
+    try {
+      xhr.open(method, uri, false);
+      xhr.onreadystatechange = function () {
+          if (this.readyState === XMLHttpRequest.DONE) {
+              if (this.status === 200) {
+                  //Does not refer to customerArray
+                  xhrResp = JSON.parse(this.responseText);
+              } else {
+                  console.log('onreadystatechange error!');
+                  console.log(this.status, this.statusText);
+              }
+          }
+      };//onreadystatechange
+      xhr.send();
+    } catch (e) {
+      console.log('makeCurl error');
       console.log(e);
     }
-  }
+  };//makeCurl
+
+  const cleanner = () => {
+    url         = null;
+    endpoint    = null;
+    xhrResp     = null;
+    method      = null;
+  }/0*cleaner*0/
+
+  /0**faz curl e retorna as moedas*0/
+  const getCurrencyData = () => {
+    url = 'http://openexchangerates.org/api/';
+    endpoint = 'currencies.json';
+    method = 'GET';
+
+    makeCurl(url, endpoint, method);
+
+    let keys = Object.keys(xhrResp);
+    // let values = Object.values(xhrResp);
+
+    if (currencies == null || currencies == undefined || currencies == [] || currencies == '') {
+      currencies = keys;
+    } else {
+      console.log('Lista de moedas já cheia.');
+    }
+
+    cleanner();
+  };/0*getCurrencyData*0/ getCurrencyData();
+
+  const getCurrencyHistory = (selected) => {
+    url = 'http://openexchangerates.org/api/';
+    endpoint = 'currencies.json';
+    method = 'GET';
+
+    makeCurl(url, endpoint, method);
+
+    let keys = Object.keys(xhrResp);
+    // let values = Object.values(xhrResp);
+
+    if (currencies == null || currencies == undefined || currencies == [] || currencies == '') {
+      currencies = keys;
+    } else {
+      console.log('Lista de moedas já cheia.');
+    }
+
+    cleanner();
+  };/0*getCurrencyData*0/ getCurrencyData();
   */
 
 </script>
