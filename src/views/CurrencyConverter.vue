@@ -3,24 +3,24 @@
     <div class="currencyFrom">
       <template id="tFrom">
         <h3><span>From:</span></h3>
-        <v-select v-model="viewFrom" v-bind:value="viewFrom" :items="currencies" label="From" dense></v-select>
+        <v-select v-model="viewFrom" v-bind:value="viewFrom" :items="currencies" label="From" v-on:change="getSValueFrom" dense></v-select>
       </template>
     </div>
     <div class="currencyTo">
       <template id="tTo">
         <h3><span>To:</span></h3>
-        <v-select v-model="viewTo" v-bind:value="viewTo" :items="currencies" label="To" dense></v-select>
+        <v-select v-model="viewTo" v-bind:value="viewTo" :items="currencies" label="To" v-on:change="getSValueTo" dense></v-select>
       </template>
     </div>
     <div class="currencyValue">
       <template  id="tValue">
         <h3><span>Value:</span></h3>
         <v-text-field class="centered-input" 
-          v-model="viewAmount" placeholder="Amount" 
-          v-mask="['#,##', '##,##','###,##','#.###,##','##.###,##','###.###,##', '#.###.###,##',
-          '##.###.###,##','###.###.###,##','#.###.###.###,##', '##.###.###.###,##',
-          '###.###.###.###,##','#.###.###.###.###,##','##.###.###.###.###,##','###.###.###.###.###,##',
-          '#.###.###.###.###.###,##','##.###.###.###.###.###,##', '###.###.###.###.###.###,##']" 
+          v-model="viewAmount" v-bind:value="viewAmount"
+          placeholder="Amount" 
+          v-mask="['#,##', '##,##','###,##','####,##','#####,##','######,##', '#######,##',
+          '########,##','#########,##','##########,##', '###########,##',
+          '############,##','#############,##','##############,##','###############,##']" 
           justify-center outlined
           v-on:change="isValidF">
         </v-text-field>
@@ -33,7 +33,7 @@
     <v-container class="currencyResult">
       <!-- <h2><span>Result:</span></h2> -->
       <h2>Result:</h2>
-      <p v-bind="resAmount"><span>{{ resAmount }}</span></p>
+      <p><span>{{ resAmount }}</span></p>
     </v-container>
   </v-container>
 </template>
@@ -61,26 +61,37 @@ export default {
       // isModalVisible
     }
   },
-  created () {
-    getCurrencyData()
-  },
+  // created () {
+  //   getCurrencyData()
+  // },
+  // mounted () {
+  //   getCurrencyData()
+  // },
   methods: {
-    isValidF: (viewAmount) => {
-      // ...
-      validateData(viewAmount)
+    isValidF: (v) => {
+      validateData(v)
+    },
+    getSValueFrom: (v) => {
+      getSelectedValueFrom(v)
+    },
+    getSValueTo: (v) => {
+      getSelectedValueTo(v)
     },
     // closeModal: () => {
     //   closeModal()
     // }
   },
-  watch: {
-    'viewFrom': (data) => {
-      viewFrom = data;
-    },
-    'viewTo': (data) => {
-      viewTo = data;
-    }
-  }
+  // computed: {
+  //   resAmount,
+  // },
+  // watch: {
+  //   'viewFrom': (data) => {
+  //     viewFrom = data;
+  //   },
+  //   'viewTo': (data) => {
+  //     viewTo = data;
+  //   }
+  // }
 }
 
 //VUE
@@ -105,7 +116,7 @@ var resAmount;
 // var isModalVisible                        = false; 
 
 //DECLARAÇAO DE FUNCOES
-/**faz o curl GET da api */
+/**faz o curl da api */
 const makeCurl = (url, endpoint, method) => {
   let uri = url + endpoint;
 
@@ -127,36 +138,50 @@ const makeCurl = (url, endpoint, method) => {
     console.log('makeCurl error');
     console.log(e);
   }
-};//makeCurlGET
+};//makeCurl
 
 const cleanner = () => {
   url         = null;
   endpoint    = null;
   xhrResp     = null;
-  viewFrom    = null;
-  viewTo      = null;
-  viewAmount  = null;
   method      = null;
 }/*cleaner*/
 
-const validateData = (viewAmount) => {
-  if(viewAmount != null) {
-    let dataString = String(viewAmount);
+const getSelectedValueFrom = (v) => {
+  console.log(v);
+  viewFrom = null;
+  viewFrom = v;
+};/**getSelectedValueView */
 
-    dataString = dataString.replace('.', '');
+const getSelectedValueTo = (v) => {
+  console.log(v);
+  viewTo = null;
+  viewTo = v;
+};/**getSelectedValueView */
+
+const validateData = (v) => {
+  if(v != null) {
+    console.log('v');
+    console.log(v);
+    let dataString = String(v);
     dataString = dataString.replace(',', '.');
     dataString = parseFloat(dataString);
     viewAmount = dataString;
-
-    dataString = null;
+    dataString        = null;
+    v                 = null;
+    resAmount         = null;
 
     if (viewFrom == null || viewFrom == undefined) {
-      console.log('Selecione o valor de FROM novamente.');
-      alert('Selecione o valor de FROM novamente.');
+      console.log('FROM não selecionado.');
     }
     if (viewTo == null || viewFrom == undefined) {
-      console.log('Selecione o valor de TO novamente.');
-      alert('Selecione o valor de TO novamente.');
+      console.log('TO não selecionado.');
+    }
+    if (viewAmount == null || viewAmount == undefined) {
+      console.log('VALOR vazio.');
+    }
+    if (resAmount == null || resAmount == undefined) {
+      console.log('resAmount vazio.');
     }
 
     convertValue(viewFrom, viewTo, viewAmount);
@@ -187,7 +212,6 @@ const convertValue = (viewFrom, viewTo, viewAmount) => {
   // url               = 'http://data.fixer.io/api/';
   url               = 'https://api.exchangerate.host/';
   method            = 'GET';
-  resAmount         = null;
 
   // endpoint = 'convert' + auxI  + data_fixerKey + auxE + viewFrom + auxE + viewTo + auxE+ viewAmount;/**data.fixer */
   endpoint = 'convert' + auxI  + 'from=' + viewFrom + auxE + 'to=' + viewTo + auxE + 'a=' + viewAmount; /**exchangerate.host */
@@ -199,7 +223,6 @@ const convertValue = (viewFrom, viewTo, viewAmount) => {
       resAmount = 'Error!';
     } else {
       resAmount = xhrResp.result;
-      console.log(resAmount);
     }
   } else {
     if (xhrResp.result == null || xhrResp.result == undefined || xhrResp.result == [] || xhrResp.result == '') {
@@ -207,57 +230,12 @@ const convertValue = (viewFrom, viewTo, viewAmount) => {
     } else {
       resAmount = null;
       resAmount = xhrResp.result;
-      console.log(resAmount);
     }
   }
-  
+  console.log(viewFrom, viewTo, viewAmount);
+  console.log(resAmount);
   cleanner();
 }/*convertValue*/
-
-// const trataCurlData = () => {
-//   console.log('tratando...');
-//   viewAmount  = String(viewAmount)
-//   viewFrom    = 'from=' + viewFrom;
-//   viewTo      = 'to=' + viewTo;
-//   viewAmount  = 'a=' + String(viewAmount);
-
-//   console.log('values after tratar');
-//   console.log(viewFrom);
-//   console.log(viewTo);
-//   console.log(viewAmount);
-
-//   verifySomeData_Random2(viewFrom, viewTo, viewAmount);
-// }/*trataCurlData*/
-
-// const rebuildData = () => {
-//   if (viewFrom == null || viewFrom == undefined) {
-//     viewFrom = arrSelectedOps[0];
-//   }
-//   if (viewTo == null || viewTo == undefined) {
-//     viewTo = arrSelectedOps[1];
-//   }
-// }/*rebuildData*/
-
-// const verifySomeData_Random = (n, n1, n2) => {
-//   let aux = Array(n, n1, n2);
-//   for (let i = 0; i < aux.length; i++) {
-//     if (aux[i] == null || aux[i] == undefined || aux[i] == [] || aux[i] == '') {
-//       viewFrom    = null;
-//       viewTo      = null;
-//     }
-//   }
-// }/*verifySomeData_Random*/
-
-// const verifySomeData_Random2 = (n, n1, n2) => {
-//   let aux = Array(n, n1, n2);
-//   if (aux[0].includes('from') && aux[1].includes('to') && aux[2].includes('a')) {
-//     console.log('data ok');
-//   } else {
-//     trataCurlData();
-//   }
-// }/*verifySomeData_Random2*/
-
-
 
 
 /** ///////////////////// */

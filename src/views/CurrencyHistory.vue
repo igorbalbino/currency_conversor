@@ -23,8 +23,8 @@ export default {
   },
   data () {
     return {
-      currencies,
-      selected,
+      // currencies,
+      // selected,
       // isModalVisible
     }
   },
@@ -32,18 +32,18 @@ export default {
   //   getCurrencyData()
   // },
   methods: {
-    getHistory: (selected) => {
-      // ...
-      getCurrencyHistory(selected)
-    },
+    // getHistory: (selected) => {
+    //   // ...
+    //   getCurrencyHistory(selected)
+    // },
     // closeModal: () => {
     //   closeModal()
     // }
   },
   watch: {
-    'selected': (data) => {
-      selected = data;
-    }
+  //   'selected': (data) => {
+  //     selected = data;
+  //   }
   }
 }
   /*
