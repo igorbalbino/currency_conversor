@@ -3,23 +3,21 @@
     <div class="currencyFrom">
       <template id="tFrom">
         <h3><span>From:</span></h3>
-        <v-select v-model="viewFrom" v-bind:value="viewFrom" :items="currencies" label="From" dense></v-select>
+        <v-select v-model="viewFrom" v-bind:value="viewFrom" :key="viewFrom" :items="currencies" label="From" dense></v-select>
       </template>
     </div>
-    <!-- <template style="float: left;">
-      <v-icon role="switch">{{ icons.mdiArrowDecision }}</v-icon>
-    </template> -->
     <div style="float: left; width: 5%;">
       <template>
-        <span><v-icon role="switch" v-on:click="switchValuesFeT">{{ icons.mdiArrowDecision }}</v-icon></span>
+        <span><v-icon v-on:click="switchValuesFT">{{ icons.mdiArrowDecision }}</v-icon></span>
       </template>
     </div>
     <div class="currencyTo">
       <template id="tTo">
         <h3><span>To:</span></h3>
-        <v-select v-model="viewTo" v-bind:value="viewTo" :items="currencies" label="To" dense></v-select>
+        <v-select v-model="viewTo" v-bind:value="viewTo" :key="viewTo" :items="currencies" label="To" dense></v-select>
       </template>
     </div>
+    <!-- <FromAndTo viewFrom="viewFrom" viewTo="viewTo"/> -->
     <div class="currencyValue">
       <template  id="tValue">
         <h3><span>Value:</span></h3>
@@ -39,10 +37,8 @@
       </template>
     </div>
     <v-container class="currencyResult">
-      <!-- <h2><span>Result:</span></h2> -->
       <h2>Result:</h2>
-      <v-icon> {{ resAmount }} </v-icon>
-      <!-- <p><span>{{ resAmount }}</span></p> -->
+      <v-icon :key="resAmount"> {{ resAmount }} </v-icon>
     </v-container>
   </v-container>
 </template>
@@ -50,22 +46,23 @@
 <script>
 //IMPORTS
 import vue from 'vue'
+import VueLodash from 'vue-lodash'
+import lodash from 'lodash'
 import VueTheMask from 'vue-the-mask'
 import {
-  // mdiPencil,
   mdiArrowDecision,
-  // mdiShareVariant,
 } from '@mdi/js'
-import _vue from 'vue-lodash'
-import lodash from 'lodash'
+// import VueRouter from 'vue-router'
 // import ModalDefault from './components/ModalDefaul.vue'
+// import FromAndTo from './components/FromAndTo.vue'
 // import GoogleCurrencyAPI from 'backend\Google-Currency-Converter-API-master\sample.php'
 
 //EXPORTA DO VUE E PARA O VUE
 export default {
   name: 'CurrencyConverter',
   components: {
-    // ModalDefault
+    // ModalDefault,
+    // FromAndTo
   },
   data () {
     return {
@@ -92,23 +89,23 @@ export default {
     isValidF: (v) => {
       validateData(v)
     },
-    switchValuesFeT: () => {
-      switchValuesFeT()
+    switchValuesFT: () => {
+      switchValuesFT()
     },
     // closeModal: () => {
     //   closeModal()
     // }
   },
-  render: (resAmount) => {
-    return resAmount
-  },
-  // render: () => {
+  // render: function () {
   //   return {
-  //     resAmount
+  //     viewFrom, 
+  //     viewTo,
   //   }
   // },
   // computed: {
-  //   resAmount,
+  //   // resAmount,
+  //   viewFrom, 
+  //   viewTo, 
   // },
   watch: {
     'viewFrom': (data) => {
@@ -122,8 +119,7 @@ export default {
 
 //VUE
 vue.use(VueTheMask);
-vue.use(_vue, { name: '_v', lodash: { lodash } });
-// vue.use(VueTheMask, _vue, { name: 'custom', lodash: { map, random } });
+vue.use(VueLodash, { name: 'ldsVue' , lodash: lodash });
 
 //DECLARACAO DE VARIAVEIS
 const xhr                                 = new XMLHttpRequest();
@@ -139,8 +135,7 @@ var endpoint                              = null;
 var method                                = null;
 var currencies;
 var viewFrom, viewTo, viewAmount;
-var resAmount;
-// var arrSelectedOps;
+var resAmount = 0;
 // var isModalVisible                        = false; 
 
 //DECLARAÇAO DE FUNCOES
@@ -233,34 +228,38 @@ const convertValue = (viewFrom, viewTo, viewAmount) => {
     if (xhrResp.result == null || xhrResp.result == undefined || xhrResp.result == [] || xhrResp.result == '') {
       resAmount = 'Error!';
     } else {
-      resAmount = xhrResp.result;
+      resAmount = String(vue.ldsVue.clone(xhrResp.result));
+
     }
   } else {
     if (xhrResp.result == null || xhrResp.result == undefined || xhrResp.result == [] || xhrResp.result == '') {
       resAmount = 'Error!';
     } else {
       resAmount = null;
-      resAmount = xhrResp.result;
+      resAmount = String(vue.ldsVue.clone(xhrResp.result));
     }
   }
-  
+  console.log(resAmount);
   cleanner();
 };/*convertValue*/
 
-const switchValuesFeT = () => {
+/**TROCA OS VALORES DE FROM e TO */
+const switchValuesFT = () => {
   if (!((viewFrom == null || viewFrom == undefined) 
   && (viewTo == null || viewTo == undefined))) {
-    let aux = _vue._v.clone(viewFrom);
+    let aux = vue.ldsVue.clone(viewFrom);
+    let aux2 = vue.ldsVue.clone(viewTo);
+    console.log(aux);
     viewFrom, viewTo = null;
-    viewFrom = aux[1];
-    viewTo = aux[0];
+    viewFrom = aux2;
+    viewTo = aux;
     console.log('trocado');
     console.log(viewFrom);
     console.log(viewTo);
   } else {
     console.log('não trocado');
   }
-}
+};/**switchValuesFT */
 
 
 /** ///////////////////// */
