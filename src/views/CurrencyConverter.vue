@@ -6,9 +6,14 @@
         <v-select v-model="viewFrom" v-bind:value="viewFrom" :items="currencies" label="From" dense></v-select>
       </template>
     </div>
-    <template>
-      <v-icon role="switch"></v-icon>
-    </template>
+    <!-- <template style="float: left;">
+      <v-icon role="switch">{{ icons.mdiArrowDecision }}</v-icon>
+    </template> -->
+    <div style="float: left; width: 5%;">
+      <template>
+        <span><v-icon role="switch" v-on:click="switchValuesFeT">{{ icons.mdiArrowDecision }}</v-icon></span>
+      </template>
+    </div>
     <div class="currencyTo">
       <template id="tTo">
         <h3><span>To:</span></h3>
@@ -36,7 +41,7 @@
     <v-container class="currencyResult">
       <!-- <h2><span>Result:</span></h2> -->
       <h2>Result:</h2>
-      <h2 v-if="resAmount"> {{ resAmount }} </h2>
+      <v-icon> {{ resAmount }} </v-icon>
       <!-- <p><span>{{ resAmount }}</span></p> -->
     </v-container>
   </v-container>
@@ -46,6 +51,13 @@
 //IMPORTS
 import vue from 'vue'
 import VueTheMask from 'vue-the-mask'
+import {
+  // mdiPencil,
+  mdiArrowDecision,
+  // mdiShareVariant,
+} from '@mdi/js'
+import _vue from 'vue-lodash'
+import lodash from 'lodash'
 // import ModalDefault from './components/ModalDefaul.vue'
 // import GoogleCurrencyAPI from 'backend\Google-Currency-Converter-API-master\sample.php'
 
@@ -62,6 +74,11 @@ export default {
       viewTo, 
       viewAmount,
       resAmount,
+      icons: {
+        // mdiPencil,
+        mdiArrowDecision,
+        // mdiShareVariant,
+      },
       // isModalVisible
     }
   },
@@ -74,6 +91,9 @@ export default {
   methods: {
     isValidF: (v) => {
       validateData(v)
+    },
+    switchValuesFeT: () => {
+      switchValuesFeT()
     },
     // closeModal: () => {
     //   closeModal()
@@ -102,6 +122,8 @@ export default {
 
 //VUE
 vue.use(VueTheMask);
+vue.use(_vue, { name: '_v', lodash: { lodash } });
+// vue.use(VueTheMask, _vue, { name: 'custom', lodash: { map, random } });
 
 //DECLARACAO DE VARIAVEIS
 const xhr                                 = new XMLHttpRequest();
@@ -151,7 +173,7 @@ const cleanner = () => {
   endpoint    = null;
   xhrResp     = null;
   method      = null;
-}/*cleaner*/
+};/*cleaner*/
 
 const validateData = (v) => {
   if(v != null) {
@@ -223,7 +245,22 @@ const convertValue = (viewFrom, viewTo, viewAmount) => {
   }
   
   cleanner();
-}/*convertValue*/
+};/*convertValue*/
+
+const switchValuesFeT = () => {
+  if (!((viewFrom == null || viewFrom == undefined) 
+  && (viewTo == null || viewTo == undefined))) {
+    let aux = _vue._v.clone(viewFrom);
+    viewFrom, viewTo = null;
+    viewFrom = aux[1];
+    viewTo = aux[0];
+    console.log('trocado');
+    console.log(viewFrom);
+    console.log(viewTo);
+  } else {
+    console.log('não trocado');
+  }
+}
 
 
 /** ///////////////////// */
@@ -241,20 +278,27 @@ const convertValue = (viewFrom, viewTo, viewAmount) => {
 <style scoped>
   .currencyFrom{
     float: left;
-    width: 50%;
+    /* width: 50%; */
+    width: 48%;
+    margin-right: 2%;
   }
 
   .currencyTo{
     float: left;
-    width: 50%;
+    /* width: 50%; */
+    width: 48%;
+    margin-left: 2%;
   }
 
   .currencyValue{
-    width: 50%;
+    /* width: 50%; */
+    width: 48%;
+    margin-left: 25%;
   }
 
   .currencyResultArea {
-    width: 50%;
+    /* width: 50%; */
+    width: 48%;
     height: 40%;
     
   }
