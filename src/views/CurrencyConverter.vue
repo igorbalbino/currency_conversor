@@ -3,13 +3,16 @@
     <div class="currencyFrom">
       <template id="tFrom">
         <h3><span>From:</span></h3>
-        <v-select v-model="viewFrom" v-bind:value="viewFrom" :items="currencies" label="From" v-on:change="getSValueFrom" dense></v-select>
+        <v-select v-model="viewFrom" v-bind:value="viewFrom" :items="currencies" label="From" dense></v-select>
       </template>
     </div>
+    <template>
+      <v-icon role="switch"></v-icon>
+    </template>
     <div class="currencyTo">
       <template id="tTo">
         <h3><span>To:</span></h3>
-        <v-select v-model="viewTo" v-bind:value="viewTo" :items="currencies" label="To" v-on:change="getSValueTo" dense></v-select>
+        <v-select v-model="viewTo" v-bind:value="viewTo" :items="currencies" label="To" dense></v-select>
       </template>
     </div>
     <div class="currencyValue">
@@ -33,7 +36,8 @@
     <v-container class="currencyResult">
       <!-- <h2><span>Result:</span></h2> -->
       <h2>Result:</h2>
-      <p><span>{{ resAmount }}</span></p>
+      <h2 v-if="resAmount"> {{ resAmount }} </h2>
+      <!-- <p><span>{{ resAmount }}</span></p> -->
     </v-container>
   </v-container>
 </template>
@@ -71,27 +75,29 @@ export default {
     isValidF: (v) => {
       validateData(v)
     },
-    getSValueFrom: (v) => {
-      getSelectedValueFrom(v)
-    },
-    getSValueTo: (v) => {
-      getSelectedValueTo(v)
-    },
     // closeModal: () => {
     //   closeModal()
     // }
   },
+  render: (resAmount) => {
+    return resAmount
+  },
+  // render: () => {
+  //   return {
+  //     resAmount
+  //   }
+  // },
   // computed: {
   //   resAmount,
   // },
-  // watch: {
-  //   'viewFrom': (data) => {
-  //     viewFrom = data;
-  //   },
-  //   'viewTo': (data) => {
-  //     viewTo = data;
-  //   }
-  // }
+  watch: {
+    'viewFrom': (data) => {
+      viewFrom = data;
+    },
+    'viewTo': (data) => {
+      viewTo = data;
+    }
+  }
 }
 
 //VUE
@@ -147,22 +153,8 @@ const cleanner = () => {
   method      = null;
 }/*cleaner*/
 
-const getSelectedValueFrom = (v) => {
-  console.log(v);
-  viewFrom = null;
-  viewFrom = v;
-};/**getSelectedValueView */
-
-const getSelectedValueTo = (v) => {
-  console.log(v);
-  viewTo = null;
-  viewTo = v;
-};/**getSelectedValueView */
-
 const validateData = (v) => {
   if(v != null) {
-    console.log('v');
-    console.log(v);
     let dataString = String(v);
     dataString = dataString.replace(',', '.');
     dataString = parseFloat(dataString);
@@ -179,9 +171,6 @@ const validateData = (v) => {
     }
     if (viewAmount == null || viewAmount == undefined) {
       console.log('VALOR vazio.');
-    }
-    if (resAmount == null || resAmount == undefined) {
-      console.log('resAmount vazio.');
     }
 
     convertValue(viewFrom, viewTo, viewAmount);
@@ -214,7 +203,7 @@ const convertValue = (viewFrom, viewTo, viewAmount) => {
   method            = 'GET';
 
   // endpoint = 'convert' + auxI  + data_fixerKey + auxE + viewFrom + auxE + viewTo + auxE+ viewAmount;/**data.fixer */
-  endpoint = 'convert' + auxI  + 'from=' + viewFrom + auxE + 'to=' + viewTo + auxE + 'a=' + viewAmount; /**exchangerate.host */
+  endpoint = 'convert' + auxI  + 'from=' + viewFrom + auxE + 'to=' + viewTo + auxE + 'amount=' + viewAmount; /**exchangerate.host */
 
   makeCurl(url, endpoint, method);
 
@@ -232,8 +221,7 @@ const convertValue = (viewFrom, viewTo, viewAmount) => {
       resAmount = xhrResp.result;
     }
   }
-  console.log(viewFrom, viewTo, viewAmount);
-  console.log(resAmount);
+  
   cleanner();
 }/*convertValue*/
 
